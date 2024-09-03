@@ -26,9 +26,18 @@ public class AccountService {
             return null;
         }
 	
-		return accountDAO.createAcount(account);
+		return accountDAO.createAcount(account);		
 		
-		
+    }
+
+    public Account login(Account account) {
+        Account accountFromDB = accountDAO.getAccountByUsername(account.getUsername());
+
+        if (accountFromDB != null && accountFromDB.getPassword().equals(account.getPassword())){
+            return accountFromDB;
+        }
+
+        return null;
     }
     
 }
