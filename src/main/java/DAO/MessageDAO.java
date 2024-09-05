@@ -8,6 +8,12 @@ import Model.Message;
 import Util.ConnectionUtil;
 
 public class MessageDAO {
+
+    /**
+     * insert a message into DB
+     * @param message
+     * @return the newly created message
+     */
     public Message createMessage(Message message){
 
         Connection connection = ConnectionUtil.getConnection();
@@ -27,7 +33,9 @@ public class MessageDAO {
             ResultSet rs = preparedStatement.getGeneratedKeys();
 
             if (rs.next()) {
+                //get the id of created message
                 int message_id = (int) rs.getInt(1);
+
                 return new Message(message_id, message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
             }
 
@@ -38,6 +46,9 @@ public class MessageDAO {
         return null;
     }
 
+    /*
+     * retrieve all messages from DB
+     */
     public List<Message> getAllMessages() {
 		Connection connection = ConnectionUtil.getConnection();
 		List<Message> messages = new ArrayList<>();
@@ -58,6 +69,9 @@ public class MessageDAO {
         return messages;
 	}
 
+    /*
+     * retrieve a message by given id
+     */
     public Message getMessageById(int id) {
 		Connection connection = ConnectionUtil.getConnection();
 		try {
@@ -76,9 +90,13 @@ public class MessageDAO {
             System.out.println(e.getMessage());
         }
 		
+        //if no message is found return null
 		return null;
 	}
 
+    /*
+     * delete message by message_id
+     */
     public Message deleteMessageById(int id) {
 		Connection connection = ConnectionUtil.getConnection();
 		try {
@@ -89,6 +107,8 @@ public class MessageDAO {
             
             Message message = getMessageById(id);
             int rowsDeleted = preparedStatement.executeUpdate();
+
+            //if deleted successfully return the deleted message
             if (rowsDeleted > 0) {            	
             	return message;
             }
@@ -98,6 +118,9 @@ public class MessageDAO {
 		return null;
     }
 
+    /*
+     * update message by message_id
+     */
     public Message updateMessage(int id, Message newMessage) {
 		
 		Connection connection = ConnectionUtil.getConnection();
@@ -112,9 +135,10 @@ public class MessageDAO {
 	        
 	        int rowsUpdated = preparedStatement.executeUpdate();
 	        
+            //if updated successfully retrieve the message from DB and return it
 	        if (rowsUpdated > 0) {
 	        	Message message = getMessageById(id);
-            	System.out.println("MessageDaO updated ");
+            	
             	return message;
             }
 		} catch(SQLException e){
@@ -124,6 +148,9 @@ public class MessageDAO {
 		return null;
 	}
 
+    /*
+     * retrieve all messages posted by User with given account_id
+     */
     public List<Message> getAllMessagesByAccountId(int id) {
 		Connection connection = ConnectionUtil.getConnection();
 		List<Message> messages = new ArrayList<>();

@@ -35,14 +35,14 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
-        app.post("/register", this::createAccountHandler);
-        app.post("/login", this::loginHandler);
-        app.post("/messages", this::createMessageHandler);
-        app.get("/messages", this::getAllMessagesHandler);
-        app.get("/messages/{message_id}", this::getMessageByIdHandler);
-        app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
-        app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
-        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
+        app.post("register", this::createAccountHandler);
+        app.post("login", this::loginHandler);
+        app.post("messages", this::createMessageHandler);
+        app.get("messages", this::getAllMessagesHandler);
+        app.get("messages/{message_id}", this::getMessageByIdHandler);
+        app.delete("messages/{message_id}", this::deleteMessageByIdHandler);
+        app.patch("messages/{message_id}", this::updateMessageByIdHandler);
+        app.get("accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
 
         return app;
     }
@@ -55,6 +55,11 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
+    /**
+     * Handler to create new account
+     * @param ctx
+     * @throws JsonProcessingException
+     */
     private void createAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account acc = mapper.readValue(ctx.body(), Account.class);
@@ -66,6 +71,11 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * handler to login user
+     * @param ctx
+     * @throws JsonProcessingException
+     */
     private void loginHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account acc = mapper.readValue(ctx.body(), Account.class);
@@ -77,6 +87,9 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * handler to post a new message
+     */
     private void createMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
@@ -90,11 +103,19 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * HAndler to retrieve all messages
+     * @param ctx
+     */
     private void getAllMessagesHandler(Context ctx)  {
     	List<Message> messages = messageService.getAllMessages();
         ctx.json(messages);
     }
 
+    /**
+     * Handler to retrieve a message with a given id. If no message exists with this id return empty body.
+     * @param ctx
+     */
     private void getMessageByIdHandler(Context ctx)  {
     	
     	int id = Integer.valueOf(ctx.pathParam("message_id"));	
@@ -108,6 +129,10 @@ public class SocialMediaController {
     	}
     }
 
+    /**
+     * Handler to delete a message with given id. If no message exists with this id return empty body.
+     * @param ctx
+     */
     private void deleteMessageByIdHandler(Context ctx)  {
     	
     	int val = Integer.valueOf(ctx.pathParam("message_id"));
@@ -120,6 +145,11 @@ public class SocialMediaController {
     	}
     }
 
+    /**
+     * Handler to update the message text by given id
+     * @param ctx
+     * @throws JsonProcessingException
+     */
     private void updateMessageByIdHandler(Context ctx) throws JsonProcessingException  {
     	int message_id = Integer.valueOf(ctx.pathParam("message_id"));
     	
@@ -136,6 +166,10 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * Handler to retrieve all messages posted by user with given account id
+     * @param ctx
+     */
     private void getAllMessagesByAccountIdHandler(Context ctx)  {
     	int id = Integer.valueOf(ctx.pathParam("account_id"));
     	List<Message> messages = messageService.getAllMessagesByAccountId(id);
