@@ -88,12 +88,40 @@ public class MessageDAO {
             preparedStatement.setInt(1, id);
             
             Message message = getMessageById(id);
-            preparedStatement.execute();
-            return message;
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if (rowsDeleted > 0) {            	
+            	return message;
+            }
         } catch(SQLException e){
             System.out.println(e.getMessage());
         }
 		return null;
     }
+
+    public Message updateMessage(int id, Message newMessage) {
+		
+		Connection connection = ConnectionUtil.getConnection();
+		try {
+		
+			String sql = "UPDATE message SET message_text=? WHERE message_id=?";
+			
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
+	        
+	        preparedStatement.setInt(2, id);
+	        preparedStatement.setString(1, newMessage.getMessage_text());
+	        
+	        int rowsUpdated = preparedStatement.executeUpdate();
+	        
+	        if (rowsUpdated > 0) {
+	        	Message message = getMessageById(id);
+            	System.out.println("MessageDaO updated ");
+            	return message;
+            }
+		} catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+		
+		return null;
+	}
             
 }
